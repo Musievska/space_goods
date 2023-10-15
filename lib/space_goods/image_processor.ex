@@ -1,22 +1,24 @@
 defmodule SpaceGoods.ImageProcessor do
-  @image_dir "priv/static/images/"
+  # better use image package
 
-  def resize_image(image_name) do
-    path = Path.join(@image_dir, image_name)
+  # @image_dir "priv/static/images/"
 
-    case File.exists?(path) do
-      true ->
-        {:ok, image} = Mogrify.open(path)
+  # def resize_image(image_name) do
+  #   path = Path.join(@image_dir, image_name)
 
-        image
-        |> Mogrify.resize("200x200")
-        |> Mogrify.save()
+  #   case File.exists?(path) do
+  #     true ->
+  #       {:ok, image} = Mogrify.open(path)
 
-        :ok
+  #       image
+  #       |> Mogrify.resize("200x200")
+  #       |> Mogrify.save()
 
-      false ->
-        IO.puts("Image not found: #{path}")
-        :error
-    end
-  end
+  #       :ok
+
+  #     false ->
+  #       IO.puts("Image not found: #{path}")
+  #       :error
+  #   end
+  # end
 end

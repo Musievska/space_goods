@@ -25,7 +25,7 @@ defmodule SpaceGoodsWeb.Router do
     get "/", PageController, :home
     # live "/", LandingPageLive, :index
     live "/products", ProductsLive, :index
-    live "/products/:id", ProductDetailsLive, :show
+    live "/products/:id", ProductDetailsLive, :index
     live "/cart", CartLive, :show
   end
 
