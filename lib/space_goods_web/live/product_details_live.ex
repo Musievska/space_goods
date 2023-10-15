@@ -22,7 +22,7 @@ defmodule SpaceGoodsWeb.ProductDetailsLive do
       <div class="flex justify-between mb-4">
         <div class="flex-1">
           <h1 class="text-3xl font-bold mb-2"><%= @product.name %></h1>
-          <p class="text-gray-600"><%= @product.description %></p>
+          <p class="text-gray-600"><%= @product.price %></p>
         </div>
         <div class="flex-1">
         <img
