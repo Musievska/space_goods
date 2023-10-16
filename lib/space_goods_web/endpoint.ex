@@ -8,7 +8,7 @@ defmodule SpaceGoodsWeb.Endpoint do
     store: :cookie,
     key: "_space_goods_key",
     signing_salt: "d2ujI2Vu",
-    same_site: "Strict"
+    same_site: "Lax"
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
@@ -21,9 +21,10 @@ defmodule SpaceGoodsWeb.Endpoint do
     at: "/",
     from: :space_goods,
     gzip: false,
-    only: SpaceGoodsWeb.static_paths(),
-    # 1 hour
-    cache_control_for_etags: "public, max-age=3600"
+    only: SpaceGoodsWeb.static_paths()
+
+  # 1 hour
+  # cache_control_for_etags: "public, max-age=3600"
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

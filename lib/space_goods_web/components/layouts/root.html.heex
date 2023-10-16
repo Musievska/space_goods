@@ -12,52 +12,6 @@
     </script>
   </head>
   <body class="bg-space">
-    <header class="navbar bg-space p-4">
-      <div class="container mx-auto flex justify-between items-center">
-        <.link href={~p"/"} class="text-red-500 text-2xl font-bold mr-4">
-          Space Goods
-        </.link>
-        <.link href={~p"/products"} class="text-red-500 text-2xl font-bold mr-4">
-          Products
-        </.link>
-        <.link href={~p"/cart"} class="text-red-500 text-2xl font-bold">
-          Cart
-        </.link>
-        <div class="flex items-center">
-          <%= if @current_user do %>
-            <span class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2">
-              Welcome, <%= @current_user.email %>
-            </span>
-            <.link
-              href={~p"/users/settings"}
-              class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2"
-            >
-              User Settings
-            </.link>
-            <.link
-              href={~p"/users/log_out"}
-              method="delete"
-              class="text-sm leading-4 text-zinc-900 hover:text-zinc-700"
-            >
-              Log out
-            </.link>
-          <% else %>
-            <.link
-              href={~p"/users/register"}
-              class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2"
-            >
-              Register
-            </.link>
-            <.link
-              href={~p"/users/log_in"}
-              class="text-sm leading-4 text-zinc-900 hover:text-zinc-700"
-            >
-              Log in
-            </.link>
-          <% end %>
-        </div>
-      </div>
-    </header>
     <%= @inner_content %>
   </body>
 </html>

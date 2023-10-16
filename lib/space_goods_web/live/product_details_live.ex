@@ -3,6 +3,8 @@ defmodule SpaceGoodsWeb.ProductDetailsLive do
 
   alias SpaceGoods.Products
 
+  on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
+
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     product = Products.get_product!(String.to_integer(id))
@@ -25,16 +27,16 @@ defmodule SpaceGoodsWeb.ProductDetailsLive do
           <p class="text-gray-600"><%= @product.price %></p>
         </div>
         <div class="flex-1">
-        <img
-              id={"@product-image-" <> Integer.to_string(@product.id)}
-              loading="lazy"
-              class="product-image w-full h-64 object-cover"
-              src="/images/no_image.jpeg"
-              data-src={"/images/#{String.replace(String.downcase(@product.name), " ", "_")}.jpg?v=#{SpaceGoodsWeb.Helpers.asset_version()}"}
-              alt={@product.name}
-              phx-hook="LoadImage"
-            />
-                    </div>
+          <img
+            id={"@product-image-" <> Integer.to_string(@product.id)}
+            loading="lazy"
+            class="product-image w-full h-64 object-cover"
+            src="/images/no_image.jpeg"
+            data-src={"/images/#{String.replace(String.downcase(@product.name), " ", "_")}.jpg?v=#{SpaceGoodsWeb.Helpers.asset_version()}"}
+            alt={@product.name}
+            phx-hook="LoadImage"
+          />
+        </div>
       </div>
       <div class="flex justify-between">
         <div class="flex-1">

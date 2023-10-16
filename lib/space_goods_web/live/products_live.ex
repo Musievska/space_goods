@@ -5,6 +5,8 @@ defmodule SpaceGoodsWeb.ProductsLive do
 
   alias SpaceGoods.Products
 
+  on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
+
   @impl true
   def mount(_params, _session, socket) do
     categories = Products.get_unique_categories()

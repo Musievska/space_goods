@@ -1,27 +1,57 @@
-<!DOCTYPE html>
-<html lang="en" class="[scrollbar-gutter:stable]">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · SpaceGoods">
-      <%= assigns[:page_title] || "SpaceGoods" %>
-    </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
-  </head>
-  <body class="bg-white antialiased">
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-3xl">
-        <.flash_group flash={@flash} />
-        <%= @inner_content %>
-      </div>
-    </main>
-    <footer class="p-4 mt-auto text-sm text-center text-gray-400 leading-6">
-      <p>
-        Crafted with ❤
-      </p>
-    </footer>
-  </body>
-</html>
+<header class="navbar bg-space p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <.link navigate={~p"/"} class="text-red-500 text-2xl font-bold mr-4">
+      Space Goods
+    </.link>
+    <.link navigate={~p"/products"} class="text-red-500 text-2xl font-bold mr-4">
+      Products
+    </.link>
+    <.link navigate={~p"/cart"} class="text-red-500 text-2xl font-bold">
+      Cart
+    </.link>
+    <div class="flex items-center">
+      <%= if @current_user do %>
+        <span class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2">
+          Welcome, <%= @current_user.email %>
+        </span>
+        <.link
+          href={~p"/users/settings"}
+          class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2"
+        >
+          User Settings
+        </.link>
+        <.link
+          href={~p"/users/log_out"}
+          method="delete"
+          class="text-sm leading-4 text-zinc-900 hover:text-zinc-700"
+        >
+          Log out
+        </.link>
+      <% else %>
+        <.link
+          href={~p"/users/register"}
+          class="text-sm leading-4 text-zinc-900 hover:text-zinc-700 mr-2"
+        >
+          Register
+        </.link>
+        <.link
+          href={~p"/users/log_in"}
+          class="text-sm leading-4 text-zinc-900 hover:text-zinc-700"
+        >
+          Log in
+        </.link>
+      <% end %>
+    </div>
+  </div>
+</header>
+<main class="px-4 py-20 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-3xl">
+    <.flash_group flash={@flash} />
+    <%= @inner_content %>
+  </div>
+</main>
+<footer class="p-4 mt-auto text-sm text-center text-gray-400 leading-6">
+  <p>
+    Crafted with ❤
+  </p>
+</footer>
