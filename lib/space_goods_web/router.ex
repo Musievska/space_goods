@@ -13,6 +13,7 @@ defmodule SpaceGoodsWeb.Router do
     plug :fetch_current_user
     # custom plug to set the locale
     plug SpaceGoodsWeb.Plugs.SetLocalePlug
+
   end
 
   pipeline :api do
@@ -22,11 +23,11 @@ defmodule SpaceGoodsWeb.Router do
   scope "/", SpaceGoodsWeb do
     pipe_through :browser
 
+
     get "/", PageController, :home
-    # live "/", LandingPageLive, :index
     live "/products", ProductsLive, :index
     live "/products/:id", ProductDetailsLive, :index
-    live "/cart", CartLive, :show
+    live "/cart", CartLive, :index
   end
 
   # Other scopes may use custom stacks.

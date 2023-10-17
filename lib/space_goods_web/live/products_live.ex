@@ -58,8 +58,8 @@ defmodule SpaceGoodsWeb.ProductsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-3xl">
-      <div class="flex justify-between mb-4">
+    <div class="mx-auto max-w-4xl">
+      <div class="flex justify-between mb-8">
         <form phx-change="filter">
           <select name="filters[category]" class="form-select w-64 py-2 px-3">
             <option value="" selected={@filters["category"] == ""}>All Categories</option>
@@ -79,7 +79,7 @@ defmodule SpaceGoodsWeb.ProductsLive do
           </select>
         </form>
       </div>
-      <div class="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mx-auto max-w-3xl">
+      <div class="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mx-auto max-w-4xl">
         <%= for product <- @products do %>
           <div class="bg-white rounded-lg overflow-hidden shadow-md">
             <img

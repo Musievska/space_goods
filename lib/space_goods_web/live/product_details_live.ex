@@ -20,10 +20,10 @@ defmodule SpaceGoodsWeb.ProductDetailsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-3xl">
+    <div class="mx-auto max-w-4xl">
       <div class="flex justify-between mb-4">
         <div class="flex-1">
-          <h1 class="text-3xl font-bold mb-2"><%= @product.name %></h1>
+          <h1 class="text-4xl font-bold mb-2"><%= @product.name %></h1>
           <p class="text-gray-600"><%= @product.price %></p>
         </div>
         <div class="flex-1">

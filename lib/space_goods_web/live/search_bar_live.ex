@@ -1,10 +1,9 @@
-# lib/spacegoods_web/components/search_bar_component.ex
-defmodule SpaceGoodsWeb.SearchBarComponent do
-  use Phoenix.Component
+defmodule SpaceGoodsWeb.SearchBarLive do
+  use Phoenix.LiveComponent
 
   alias Spacegoods.Products
 
-  def search_bar(assigns) do
+  def render(assigns) do
     ~H"""
     <div id="search-bar">
       <form phx-submit="search" phx-change="suggest">
