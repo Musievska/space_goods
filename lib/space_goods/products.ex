@@ -43,6 +43,16 @@ defmodule SpaceGoods.Products do
     Product.changeset(product, attrs)
   end
 
+  def get_products_by_ids(product_ids) do
+    from(p in Product, where: p.id in ^product_ids)
+    |> Repo.all()
+  end
+
+  def list_products_id(%{"ids" => ids}) do
+    from(p in Product, where: p.id in ^ids)
+    |> Repo.all()
+  end
+
   defp apply_category_filter(query, nil), do: query
   defp apply_category_filter(query, ""), do: query
 

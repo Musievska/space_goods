@@ -1,9 +1,8 @@
 defmodule SpaceGoodsWeb.ProductsLive do
   use SpaceGoodsWeb, :live_view
 
-  import Phoenix.LiveView.Helpers
-
   alias SpaceGoods.Products
+  alias SpaceGoods.Shopping
 
   on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
 
@@ -47,12 +46,16 @@ defmodule SpaceGoodsWeb.ProductsLive do
   end
 
   def handle_event("add_to_cart", %{"id" => id}, socket) do
-    # loading state/issue
-    socket = assign(socket, loading: true)
+    user = socket.assigns.current_user
+    cart_id = socket.assigns.cart_id
 
-    {:noreply,
-     assign(socket, loading: false)
-     |> push_patch(to: "/cart", flash: %{info: "Added to cart"})}
+    cart =
+      SpaceGoods.Shopping.get_or_create_cart(%{user_id: user && user.id, session_id: cart_id})
+
+    {:ok, _cart_item} = SpaceGoods.Shopping.add_product_to_cart(cart, id)
+
+    {:noreply, socket |> put_flash(:info, "Added to cart")}
+    IO.inspect(socket.assigns.flash)
   end
 
   @impl true
@@ -93,10 +96,19 @@ defmodule SpaceGoodsWeb.ProductsLive do
             />
             <div class="p-6">
               <h2 class="text-xl font-semibold mb-2"><%= product.name %></h2>
-              <p class="font-bold mb-2">Price: <%= product.price %></p>
+              <p class="font-bold mb-2"><%= product.price %> $</p>
               <p class="mb-2">Rating: <%= product.rating %></p>
               <button phx-click="more_details" phx-value-id={product.id}>More Details</button>
-              <button phx-click="add_to_cart" phx-value-id={product.id}>Add to Cart</button>
+              <button
+                id={"add-to-cart-" <> Integer.to_string(product.id)}
+                phx-hook="AddToCart"
+                data-id={product.id}
+                data-name={product.name}
+                data-price={product.price}
+                value={product.id}
+              >
+                <img src="images/cart.png" alt="Cart Image" class="round-image-padding w-20 h-20" />
+              </button>
             </div>
           </div>
         <% end %>

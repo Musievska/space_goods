@@ -4,7 +4,7 @@
 
 /* This file is for your main application CSS */
 /* .bg-space {
-    background-image: url('/images/background.jpg');
+    background-color: #201a1a;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -25,6 +25,20 @@
     font-style: normal;
 }
 
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid #000;
+    align-items: stretch;
+    
+  }
+  
+
 .dropdown-menu-arrow::before {
     content: "";
     position: absolute;
@@ -40,12 +54,12 @@
 } 
 
 .menu-item:hover {
-    @apply hover:text-emDark-light
+    @apply hover:text-black
 }
 
 .round-image-padding {
     border-radius: 50%;
-    border: 0.5px solid #FFFFFF;
+    border: 2px solid white;
     padding: 2px;
 }
 

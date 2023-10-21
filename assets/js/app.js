@@ -8,11 +8,12 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
-
+import { addToCart, removeFromCart, getCart, clearCart } from "./cart"
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 // Hooks
 let Hooks = {};
+
 Hooks.LoadImage = {
     mounted() {
         this.loadImage();
@@ -40,6 +41,71 @@ Hooks.LoadImage = {
     }
 }
 
+Hooks.AddToCart = {
+    mounted() {
+        this.el.addEventListener('click', () => {
+            const product = {
+                id: this.el.getAttribute('data-id'),
+                name: this.el.getAttribute('data-name'),
+                price: parseFloat(this.el.getAttribute('data-price'))
+            };
+            addToCart(product);
+        });
+    }
+};
+
+Hooks.CartPage = {
+    mounted() {
+        this.pushCartToServer();
+
+        this.handleEvent("cart_updated", ({ items }) => {
+            console.log('Received updated cart items:', items);
+
+            // Update local storage and UI with new cart items.
+            try {
+                localStorage.setItem('cart', JSON.stringify(items));
+                // ... update UI ...
+            } catch (e) {
+                console.error('Failed to update local storage: ', e);
+            }
+        });
+    },
+    updated() {
+        this.pushCartToServer();
+    },
+    pushCartToServer() {
+        let cartItems;
+        try {
+            cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        } catch (e) {
+            console.error('Failed to parse cart data from local storage: ', e);
+            cartItems = [];
+        }
+        console.log('Pushing cart to server:', cartItems);  // Moved line
+        this.pushEvent('load_cart', { items: cartItems });
+    }
+};
+
+
+// Hooks.CartPage = {
+//     mounted() {
+//       this.pushCartToServer();
+//       this.handleEvent("cart_updated", ({ items }) => {
+//         // Update local storage and UI with new cart items.
+//         localStorage.setItem('cart', JSON.stringify(items));
+//         // ... update UI ...
+//       });
+//     },
+//     updated() {
+//       this.pushCartToServer();
+//     },
+//     pushCartToServer() {
+//       const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+//       this.pushEvent('load_cart', { items: cartItems });
+//     }
+//   };
+
+
 let liveSocket = new LiveSocket("/live", Socket, {
     params: {_csrf_token: csrfToken},
     hooks: Hooks
@@ -61,11 +127,17 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide();
 });
 
+liveSocket.enableDebug();
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
+liveSocket.enableDebug();
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+console.log(liveSocket.activeElement);  // Logs the DOM element of the active LiveView
+window.myHook = Hooks.CartPage;
+

@@ -4,11 +4,22 @@ defmodule SpaceGoods.Shopping do
   alias SpaceGoods.Products.Product
   import Ecto.Query
 
-  def get_or_create_cart(user_id) do
-    Repo.get_by(Cart, user_id: user_id) ||
-      %Cart{user_id: user_id}
-      |> Cart.changeset(%{})
-      |> Repo.insert!()
+  def get_or_create_cart(%{user_id: user_id, session_id: session_id}) do
+    query =
+      from(c in Cart,
+        where: c.user_id == ^user_id or c.session_id == ^session_id,
+        preload: :cart_items
+      )
+
+    case Repo.one(query) do
+      nil ->
+        %Cart{user_id: user_id, session_id: session_id}
+        |> Cart.changeset(%{})
+        |> Repo.insert!()
+
+      cart ->
+        cart
+    end
   end
 
   def add_product_to_cart(cart, product_id) do
