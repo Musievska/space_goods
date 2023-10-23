@@ -4,23 +4,32 @@ defmodule SpaceGoods.Shopping do
   alias SpaceGoods.Products.Product
   import Ecto.Query
 
-  def get_or_create_cart(%{user_id: user_id, session_id: session_id}) do
+  def get_or_create_cart(%{user_id: user_id, session_id: session_id}) when is_binary(user_id) and is_binary(session_id) do
+    # user_id and session_id should be integers
+    user_id_int = String.to_integer(user_id)
+    session_id_int = String.to_integer(session_id)
+
     query =
       from(c in Cart,
-        where: c.user_id == ^user_id or c.session_id == ^session_id,
+        where: c.user_id == ^user_id_int or c.session_id == ^session_id_int,
         preload: :cart_items
       )
 
     case Repo.one(query) do
       nil ->
-        %Cart{user_id: user_id, session_id: session_id}
+        %Cart{user_id: user_id_int, session_id: session_id_int}
         |> Cart.changeset(%{})
         |> Repo.insert!()
 
       cart ->
         cart
     end
+  rescue
+    _ -> {:error, "Invalid argument or conversion error"}
   end
+
+  def get_or_create_cart(_), do: {:error, "Invalid argument"}
+
 
   def add_product_to_cart(cart, product_id) do
     case Repo.get_by(CartItem, cart_id: cart.id, product_id: product_id) do
@@ -70,14 +79,21 @@ defmodule SpaceGoods.Shopping do
 
   # Clear all items from a user's cart
   def clear_cart(user_id) do
-    case get_or_create_cart(user_id) do
-      %Cart{id: cart_id} ->
-        CartItem
-        |> where(cart_id: ^cart_id)
-        |> Repo.delete_all()
+    with %Cart{} = cart <- Repo.get_by(Cart, user_id: user_id) do
+      query = from ci in CartItem, where: ci.cart_id == ^cart.id
 
-      _ ->
-        {:error, "Cart not found"}
+      case Repo.all(query) do
+        # No items to delete
+        [] ->
+          {:ok, cart}
+
+        _ ->
+          Repo.delete_all(query)
+          {:ok, cart}
+      end
+    else
+      nil -> {:error, "Cart not found"}
+      error -> {:error, error}
     end
   end
 end

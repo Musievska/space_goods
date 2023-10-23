@@ -51,22 +51,24 @@ window.handleAddToCart = function(productId, productName, productPrice) {
 };
 
 const increaseQuantity = (productId) => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log('Increasing quantity:', productId);
+    const cart = getCartFromStorage();
     const item = cart.find(cartItem => cartItem.id === productId);
     if (item) {
         item.quantity++;
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderCartItems();
+        saveCartToStorage(cart);
     }
 };
 
 const decreaseQuantity = (productId) => {
-    // similar to increaseQuantity, but decrement item.quantity instead
+    console.log('Decreasing quantity:', productId);
+    const cart = getCartFromStorage();
+    const item = cart.find(cartItem => cartItem.id === productId);
+    if (item && item.quantity > 1) {
+        item.quantity--;
+        saveCartToStorage(cart);
+    }
 };
 
-// const removeFromCart = (productId) => {
-//     // similar to above, but filter out the item with the given productId
-// };
 
-
-export { addToCart, removeFromCart, getCart, clearCart, saveCartToStorage };
+export { addToCart, removeFromCart, getCart, clearCart, saveCartToStorage, increaseQuantity, decreaseQuantity };

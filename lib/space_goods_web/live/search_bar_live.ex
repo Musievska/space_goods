@@ -1,9 +1,17 @@
 defmodule SpaceGoodsWeb.SearchBarLive do
-  use Phoenix.LiveComponent
+  use SpaceGoodsWeb, :live_view
 
-  alias Spacegoods.Products
+  alias SpaceGoods.Products
+
+
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, product: "", matches: [], loading: false)}
+  end
 
   def render(assigns) do
+    product = Map.get(assigns, :product, "")
+
     ~H"""
     <div id="search-bar">
       <form phx-submit="search" phx-change="suggest">
@@ -13,7 +21,7 @@ defmodule SpaceGoodsWeb.SearchBarLive do
           value={@product}
           placeholder="Search for Space Goods"
           autofocus
-          autocomplete="off"
+          autocomplete="on"
           readonly={@loading}
           list="matches"
           phx-debounce="1000"
@@ -30,7 +38,7 @@ defmodule SpaceGoodsWeb.SearchBarLive do
         </option>
       </datalist>
 
-      <div :if={@loading} class="loader">Loading...</div>
+      <%!-- <div :if={@loading} class="loader">Loading...</div> --%>
     </div>
     """
   end
@@ -41,7 +49,7 @@ defmodule SpaceGoodsWeb.SearchBarLive do
   end
 
   def handle_event("search", %{"product" => product}, socket) do
-    send(self(), {:run_search, product})
+    send(socket.parent_pid, {:run_search, product})
 
     socket =
       assign(socket,
@@ -52,6 +60,7 @@ defmodule SpaceGoodsWeb.SearchBarLive do
     {:noreply, socket}
   end
 
+
   def handle_info({:run_search, product}, socket) do
     socket =
       assign(socket,
@@ -61,4 +70,6 @@ defmodule SpaceGoodsWeb.SearchBarLive do
 
     {:noreply, socket}
   end
+
+
 end

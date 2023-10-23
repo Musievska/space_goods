@@ -4,6 +4,8 @@ defmodule SpaceGoodsWeb.ProductsLive do
   alias SpaceGoods.Products
   alias SpaceGoods.Shopping
 
+  import SpaceGoodsWeb.SearchBarLive
+
   on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
 
   @impl true
@@ -35,11 +37,11 @@ defmodule SpaceGoodsWeb.ProductsLive do
     {:noreply, assign(socket, products: products, sort_by: sort_by)}
   end
 
-  @impl true
-  def handle_event("change_per_page", %{"per_page" => per_page}, socket) do
-    per_page = String.to_integer(per_page)
-    {:noreply, push_patch(socket, to: "/products?page=1&per_page=#{per_page}")}
-  end
+  # @impl true
+  # def handle_event("change_per_page", %{"per_page" => per_page}, socket) do
+  #   per_page = String.to_integer(per_page)
+  #   {:noreply, push_patch(socket, to: "/products?page=1&per_page=#{per_page}")}
+  # end
 
   def handle_event("more_details", %{"id" => id}, socket) do
     {:noreply, push_navigate(socket, to: "/products/#{id}")}
@@ -58,10 +60,18 @@ defmodule SpaceGoodsWeb.ProductsLive do
     IO.inspect(socket.assigns.flash)
   end
 
+  def handle_info({:run_search, product}, socket) do
+    products = Products.search_by_name(product)
+
+    {:noreply, assign(socket, products: products)}
+  end
+
+
   @impl true
   def render(assigns) do
     ~H"""
     <div class="mx-auto max-w-4xl">
+    <%= live_render(@socket, SpaceGoodsWeb.SearchBarLive, id: "search-bar") %>
       <div class="flex justify-between mb-8">
         <form phx-change="filter">
           <select name="filters[category]" class="form-select w-64 py-2 px-3">

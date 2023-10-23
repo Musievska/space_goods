@@ -53,6 +53,19 @@ defmodule SpaceGoods.Products do
     |> Repo.all()
   end
 
+  def suggest(prefix) do
+    query = from p in Product,
+            where: ilike(p.name, ^"#{prefix}%"),
+            select: %{name: p.name, description: p.description}
+    Repo.all(query)
+  end
+
+  def search_by_name(name) do
+    query = from p in Product,
+            where: ilike(p.name, ^"%#{name}%")
+    Repo.all(query)
+  end
+  
   defp apply_category_filter(query, nil), do: query
   defp apply_category_filter(query, ""), do: query
 

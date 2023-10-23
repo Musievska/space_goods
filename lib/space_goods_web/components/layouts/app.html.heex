@@ -6,6 +6,12 @@
     <.link navigate={~p"/products"} class="text-red-500 text-2xl font-bold mr-4">
       Products
     </.link>
+    <%!-- <%= live_render(
+  @socket,
+  SpaceGoodsWeb.SearchbarLive,
+  id: "searchbar",
+  container: {:div, class: "flex items-center lg:w-full"}
+) %> --%>
   </div>
   <div class="relative ml-auto flex">
     <.link navigate={~p"/favorites"} class="text-red-500 text-2xl font-bold mr-4">
@@ -41,14 +47,14 @@
             Welcome, <%= @current_user.email %>
           </.link>
           <.link
-            href="#"
+            href="{~p/change_profile_image}"
             class="menu-item"
             role="menuitem"
             tabindex="-1"
             method="get"
             id="user-menu-item-1"
           >
-            Favorites
+            Image Settings
           </.link>
           <.link
             href={~p"/users/settings"}
@@ -58,7 +64,7 @@
             method="get"
             id="user-menu-item-2"
           >
-            Settings
+            Accounts Settings
           </.link>
           <.link
             href={~p"/users/log_out"}
@@ -96,8 +102,8 @@
     </div>
   </div>
 </header>
-<main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-5xl">
+<main class="px-0 py-20  sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl px-0">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
   </div>

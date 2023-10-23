@@ -8,7 +8,7 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
-import { addToCart, removeFromCart, getCart, clearCart } from "./cart"
+import { addToCart, removeFromCart, getCart, clearCart, increaseQuantity, decreaseQuantity } from "./cart"
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 // Hooks
@@ -82,28 +82,76 @@ Hooks.CartPage = {
             cartItems = [];
         }
         console.log('Pushing cart to server:', cartItems);  // Moved line
+
         this.pushEvent('load_cart', { items: cartItems });
     }
 };
 
+Hooks.UpdateQuantity = {
+    mounted() {
+        this.el.addEventListener('click', (event) => {
+            event.stopPropagation();
+    event.preventDefault();
+            const actionButton = event.target.closest('button[data-action]');
+            const actionDiv = event.target.closest('div[data-id]');
+            if (actionButton && actionDiv) {
+                const action = actionButton.getAttribute('data-action');
+                const id = actionDiv.getAttribute('data-id');
+                if (action && id) {
+                    this.pushEvent(action, { id: id });
 
-// Hooks.CartPage = {
+                    // Update local storage
+                    if(action === 'increase_quantity') {
+                        increaseQuantity(id);
+                    } else if(action === 'decrease_quantity') {
+                        decreaseQuantity(id);
+                    }
+
+                } else {
+                    console.error('Missing action or id', { action, id });
+                }
+            }
+        });
+    }
+};
+
+// Hooks.RemoveFromCart = {
 //     mounted() {
-//       this.pushCartToServer();
-//       this.handleEvent("cart_updated", ({ items }) => {
-//         // Update local storage and UI with new cart items.
-//         localStorage.setItem('cart', JSON.stringify(items));
-//         // ... update UI ...
-//       });
-//     },
-//     updated() {
-//       this.pushCartToServer();
-//     },
-//     pushCartToServer() {
-//       const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-//       this.pushEvent('load_cart', { items: cartItems });
+//         this.el.addEventListener('click', () => {
+//             const productId = this.el.getAttribute('data-id');
+//             removeFromCart(productId);
+//             this.pushEvent('remove_item', { id: productId });
+//         });
 //     }
-//   };
+// };
+
+Hooks.RemoveFromCart = {
+    mounted() {
+        this.el.addEventListener('click', () => {
+            const productId = this.el.getAttribute('data-id');
+            console.log('Product ID:', productId);
+            console.log('data-id');  // Existing log statement
+
+
+            if (productId) {
+                removeFromCart(productId);
+                this.pushEvent('remove_item', { id: productId });
+
+            } else {
+                console.error('Missing productId');
+            }
+        });
+    }
+};
+
+Hooks.FinishPurchase = {
+    mounted() {
+        this.el.addEventListener('click', () => {
+            clearCart();  // Clear the cart on the client-side
+            this.pushEvent('clear_cart', {});  // Notify the server
+        });
+    }
+};
 
 
 let liveSocket = new LiveSocket("/live", Socket, {
