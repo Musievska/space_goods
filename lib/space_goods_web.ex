@@ -17,7 +17,7 @@ defmodule SpaceGoodsWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt uploads)
 
   def router do
     quote do
@@ -54,6 +54,10 @@ defmodule SpaceGoodsWeb do
       use Phoenix.LiveView,
         layout: {SpaceGoodsWeb.Layouts, :app}
 
+      # on_mount SpaceGoodsWeb.Flash
+
+      # Impor connection and controller functions to use in pipelines
+      on_mount SpaceGoodsWeb.RestoreLocale
       unquote(html_helpers())
     end
   end
@@ -61,6 +65,9 @@ defmodule SpaceGoodsWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      # https://sevenseacat.net/posts/2023/flash-messages-in-phoenix-liveview-components/
+      import SpaceGoodsWeb.Flash, only: [put_flash!: 3]
 
       unquote(html_helpers())
     end
@@ -86,6 +93,8 @@ defmodule SpaceGoodsWeb do
       # Core UI components and translation
       import SpaceGoodsWeb.CoreComponents
       import SpaceGoodsWeb.Gettext
+      # Custom components is avaible in all mpdules witout import
+      import SpaceGoodsWeb.CustomComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

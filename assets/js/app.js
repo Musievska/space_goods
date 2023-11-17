@@ -9,6 +9,8 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import { addToCart, removeFromCart, getCart, clearCart, increaseQuantity, decreaseQuantity } from "./cart"
+import Uploaders from "./uploaders"
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 // Hooks
@@ -53,6 +55,22 @@ Hooks.AddToCart = {
         });
     }
 };
+// Hooks.AddToCart = {
+//     mounted() {
+//         this.el.addEventListener('click', () => {
+//             const product = {
+//                 id: this.el.getAttribute('data-id'),
+//                 name: this.el.getAttribute('data-name'),
+//                 price: parseFloat(this.el.getAttribute('data-price'))
+//             };
+//             addToCart(product);
+//             this.pushEvent("add_to_cart", product);
+//         });
+//     }
+// };
+
+
+let previousCartItems = []; //  pushCartToServer method
 
 Hooks.CartPage = {
     mounted() {
@@ -81,17 +99,21 @@ Hooks.CartPage = {
             console.error('Failed to parse cart data from local storage: ', e);
             cartItems = [];
         }
-        console.log('Pushing cart to server:', cartItems);  // Moved line
-
-        this.pushEvent('load_cart', { items: cartItems });
+        if (JSON.stringify(cartItems) !== JSON.stringify(previousCartItems)) {
+            console.log('Pushing cart to server, called:', cartItems);  // Moved line
+            this.pushEvent('load_cart', { items: cartItems });
+            previousCartItems = cartItems;  // Update previous cart items
+        }
     }
 };
+
+
 
 Hooks.UpdateQuantity = {
     mounted() {
         this.el.addEventListener('click', (event) => {
             event.stopPropagation();
-    event.preventDefault();
+        event.preventDefault();
             const actionButton = event.target.closest('button[data-action]');
             const actionDiv = event.target.closest('div[data-id]');
             if (actionButton && actionDiv) {
@@ -115,15 +137,6 @@ Hooks.UpdateQuantity = {
     }
 };
 
-// Hooks.RemoveFromCart = {
-//     mounted() {
-//         this.el.addEventListener('click', () => {
-//             const productId = this.el.getAttribute('data-id');
-//             removeFromCart(productId);
-//             this.pushEvent('remove_item', { id: productId });
-//         });
-//     }
-// };
 
 Hooks.RemoveFromCart = {
     mounted() {
@@ -156,7 +169,9 @@ Hooks.FinishPurchase = {
 
 let liveSocket = new LiveSocket("/live", Socket, {
     params: {_csrf_token: csrfToken},
-    hooks: Hooks
+    hooks: Hooks,
+    uploaders: Uploaders
+
 });
 // Show progress bar on live navigation and form submits. Only displays if still
 // loading after 120 msec
@@ -175,8 +190,6 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide();
 });
 
-liveSocket.enableDebug();
-
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 liveSocket.enableDebug();
@@ -187,5 +200,5 @@ liveSocket.enableDebug();
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 console.log(liveSocket.activeElement);  // Logs the DOM element of the active LiveView
-window.myHook = Hooks.CartPage;
+// window.myHook = Hooks.CartPage;
 

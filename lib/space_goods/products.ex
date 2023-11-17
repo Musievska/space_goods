@@ -7,11 +7,34 @@ defmodule SpaceGoods.Products do
   alias SpaceGoods.Repo
   alias SpaceGoods.Products.Product
 
-  def list_products(filters \\ %{}) do
+  # def list_products(filters \\ %{}) do
+  #   Product
+  #   |> apply_category_filter(filters["category"])
+  #   |> apply_sorting(filters["sort_by"] || "default")
+  #   |> Repo.all()
+  # end
+
+  def list_products(filters \\ %{}, page \\ 1, per_page \\ 6) do
     Product
     |> apply_category_filter(filters["category"])
     |> apply_sorting(filters["sort_by"] || "default")
+    |> offset(^((page - 1) * per_page))
+    |> limit(^per_page)
     |> Repo.all()
+  end
+
+  def list_paginated_products(%{filters: filters} = options) when is_map(options) do
+    from(Product)
+    |> apply_category_filter(filters["category"])
+    |> apply_sorting(filters["sort_by"] || "default")
+    |> sort(options)
+    |> paginate(options)
+    |> Repo.all()
+  end
+
+  def count_products_in_category(category) do
+    from(p in Product, where: p.category == ^category)
+    |> Repo.aggregate(:count, :id)
   end
 
   def get_product!(id), do: Repo.get!(Product, id)
@@ -54,18 +77,56 @@ defmodule SpaceGoods.Products do
   end
 
   def suggest(prefix) do
-    query = from p in Product,
-            where: ilike(p.name, ^"#{prefix}%"),
-            select: %{name: p.name, description: p.description}
+    query =
+      from p in Product,
+        where: ilike(p.name, ^"#{prefix}%"),
+        select: %{name: p.name, description: p.description}
+
     Repo.all(query)
   end
 
+  def get_unique_categories do
+    Product
+    |> select([p], p.category)
+    |> distinct(true)
+    |> Repo.all()
+  end
+
   def search_by_name(name) do
-    query = from p in Product,
-            where: ilike(p.name, ^"%#{name}%")
+    query =
+      from p in Product,
+        where: ilike(p.name, ^"%#{name}%")
+
     Repo.all(query)
   end
-  
+
+  def count_products do
+    Repo.aggregate(Product, :count, :id)
+  end
+
+  defp sort(query, %{sort_by: sort_by, sort_order: sort_order}) do
+    order_by(query, {^sort_order, ^sort_by})
+  end
+
+  defp sort(query, _options), do: query
+
+  defp paginate(query, %{page: page, per_page: per_page}) do
+    offset = max((page - 1) * per_page, 0)
+
+    query
+    |> limit(^per_page)
+    |> offset(^offset)
+  end
+
+  # def count_products_in_category(nil), do: {:error, "Category cannot be nil"}
+
+  # def count_products_in_category(category) do
+  #   from(p in Product, where: p.category == ^category)
+  #   |> Repo.aggregate(:count, :id)
+  # end
+
+  # defp paginate(query, _options), do: query
+
   defp apply_category_filter(query, nil), do: query
   defp apply_category_filter(query, ""), do: query
 
@@ -80,11 +141,4 @@ defmodule SpaceGoods.Products do
 
   defp valid_sort_by(sort_by) when sort_by in ~w(price_asc price_desc rating), do: sort_by
   defp valid_sort_by(_), do: "default"
-
-  def get_unique_categories do
-    Product
-    |> select([p], p.category)
-    |> distinct(true)
-    |> Repo.all()
-  end
 end

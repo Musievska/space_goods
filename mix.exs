@@ -54,7 +54,8 @@ defmodule SpaceGoods.MixProject do
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:bodyguard, "~> 2.4.2"},
       {:mogrify, "~> 0.9.3"},
-      {:paginator, "~> 1.2.0"}
+      {:set_locale, "~> 0.2.1"},
+      {:timex, "~> 3.7"}
     ]
   end
 

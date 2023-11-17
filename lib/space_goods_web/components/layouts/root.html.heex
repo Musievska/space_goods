@@ -8,11 +8,141 @@
       <%= assigns[:page_title] || "Space Goods" %>
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    <script
+      defer
+      phx-track-static
+      type="text/javascript"
+      src={~p"/assets/app.js"}
+    >
     </script>
   </head>
   <body class="bg-space">
-  <div class="bg-space">1</div>
+    <header class="bg-space flex justify-between items-center px-6 py-3">
+      <div class="flex relative">
+        <.link patch={~p"/"} class="text-red-500 text-2xl font-bold mr-4">
+          <.icon
+            name="hero-home"
+            class="ml-1 w-8 h-8 text-red-500 hover:animate-bounce"
+          >
+          </.icon>
+        </.link>
+        <.link
+          patch={~p"/#{@locale}/products"}
+          class="text-red-500 text-lg md:text-2xl lg:text-3xl xl:text-3xl font-bold mr-4 hover:animate-bounce"
+        >
+          <%= gettext("Products") %>
+        </.link>
+      </div>
+      <div class="relative ml-auto flex">
+        <.link
+          patch={~p"/#{@locale}/wishlist"}
+          class="text-red-500 text-2xl font-bold mr-4"
+        >
+          <.icon
+            name="hero-heart"
+            class="ml-1 w-8 h-8 text-red-500 hover:animate-pulse"
+          >
+          </.icon>
+        </.link>
+        <.link
+          patch={~p"/#{@locale}/cart"}
+          class="text-red-500 text-2xl font-bold mr-4"
+        >
+          <.icon
+            name="hero-shopping-cart"
+            class="ml-1 w-8 h-8 text-red-500 hover:animate-pulse"
+          >
+          </.icon>
+        </.link>
+        <div class="flex-col">
+          <button
+            class="img-down-arrow"
+            type="button"
+            id="user-menu-button"
+            phx-click={SpaceGoodsWeb.Layouts.App.toggle_dropdown_menu()}
+          >
+            <.icon
+              name="hero-user"
+              class="ml-1 w-8 h-8 text-red-500 hover:animate-pulse"
+            >
+            </.icon>
+          </button>
+          <div
+            id="dropdown_menu"
+            phx-click-away={SpaceGoodsWeb.Layouts.App.toggle_dropdown_menu()}
+            class="dropdown-menu-arrow absolute right-0 mt-2 py-2 w-flex bg-red-500 rounded-lg shadow-xl border border-white"
+            hidden="true"
+          >
+            <%= if @current_user do %>
+              <.link
+                href={~p"/#{@locale}/users/settings"}
+                class="menu-item border-b border-white border-opacity-50"
+                role="menuitem"
+                tabindex="-1"
+                method="get"
+                id="user-menu-item-0"
+              >
+                Welcome, <%= @current_user.email %>
+              </.link>
+              <.link
+                href={~p"/#{@locale}/profile-image-upload"}
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                method="get"
+                id="user-menu-item-1"
+              >
+                Image Settings
+              </.link>
+              <.link
+                href={~p"/#{@locale}/shipping-info"}
+                class="menu-item  border-b border-white border-opacity-50"
+                role="menuitem"
+                tabindex="-1"
+                method="get"
+                id="user-menu-item-2"
+              >
+                Shipping Settings
+              </.link>
+              <.link
+                href={~p"/#{@locale}/users/log_out"}
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                method="delete"
+                id="user-menu-item-3"
+              >
+                Sign out
+              </.link>
+            <% else %>
+              <.link
+                href={~p"/#{@locale}/users/log_in"}
+                class="menu-item border-b border-white border-opacity-50"
+                role="menuitem"
+                tabindex="-1"
+                method="get"
+                id="user-menu-item-0"
+              >
+                Sign in
+              </.link>
+              <.link
+                href={~p"/#{@locale}/users/register"}
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                method="get"
+                id="user-menu-item-1"
+              >
+                Register
+              </.link>
+            <% end %>
+          </div>
+        </div>
+        <div class="img-down-arrow ml-2 sm:ml-4">
+          <.locale_btn locale={@locale} url={@conn.request_path} />
+        </div>
+      </div>
+    </header>
     <%= @inner_content %>
   </body>
 </html>

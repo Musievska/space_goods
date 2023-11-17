@@ -9,6 +9,8 @@ defmodule SpaceGoods.Accounts.User do
     field :confirmed_at, :naive_datetime
     field :role, :string, default: "user"
     field :preferred_language, :string
+    field :profile_image_url, :string
+    has_one :shipping_info, SpaceGoods.Accounts.ShippingInfo
 
     timestamps()
   end

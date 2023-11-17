@@ -19,7 +19,7 @@ config :space_goods, SpaceGoods.Repo,
 config :space_goods, SpaceGoodsWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {127, 0, 0, 1}, port: 4040],
   check_origin: false,
   code_reloader: true,
   debug_errors: false,
@@ -56,6 +56,7 @@ config :space_goods, SpaceGoodsWeb.Endpoint,
 config :space_goods, SpaceGoodsWeb.Endpoint,
   live_reload: [
     patterns: [
+      ~r"priv/static/(?!uploads).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/space_goods_web/(controllers|live|components)/.*(ex|heex)$"

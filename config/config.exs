@@ -20,6 +20,11 @@ config :space_goods, SpaceGoodsWeb.Endpoint,
   pubsub_server: SpaceGoods.PubSub,
   live_view: [signing_salt: "PqGvey96j2EOxkZL8OeZoUOUxtTeSIla"]
 
+# Configures Gettext locales
+config :space_goods, SpaceGoodsWeb.Gettext,
+  default_locale: "en",
+  locales: ~w(en bg)
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

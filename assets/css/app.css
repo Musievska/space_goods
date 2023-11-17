@@ -11,7 +11,7 @@
 
   } */
 
-  @font-face {
+  /* @font-face {
     font-family: "WorkSans";
     src: url("/fonts/WorkSans-Regular.ttf");
     font-weight: normal;
@@ -23,9 +23,9 @@
     src: url("/fonts/WorkSans-Bold.ttf");
     font-weight: bold;
     font-style: normal;
-}
+} */
 
-main {
+/* main {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -33,12 +33,27 @@ main {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    border: 1px solid #000;
+    border: 1px;
     align-items: stretch;
     
   }
-  
+   */
 
+/* Custom CSS */
+.product-image-container {
+    height: 200px; /* Set a fixed height */
+    background-color: #f0f0f0; /* Optional: a light background color to fill empty space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .product-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  
 .dropdown-menu-arrow::before {
     content: "";
     position: absolute;
@@ -74,14 +89,201 @@ main {
     border-style: solid;
 }
   
+.quantity-field {
+    transition: opacity 0.3s ease-in-out;
+}
 
 
+@keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 0.1;  /* Lowered opacity value */
+    }
+  }
 
+/* image upload page */
+#images {
+  @apply mt-8 max-w-4xl mx-auto;
+}
+
+#image-upload-container {
+  @apply mt-8 max-w-4xl mx-auto;
+
+}
+
+#images form button {
+  @apply mt-4 w-full py-2 px-4 border border-transparent font-medium rounded-md text-white bg-red-600 transition duration-150 ease-in-out hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-300;
+}
+
+#image-upload-container h1 {
+  @apply text-center text-4xl font-bold text-red-500 mx-auto;
+}
+
+#images form .hint {
+  @apply my-4 text-slate-600 text-sm;
+}
+
+#image-upload-container .drop {
+  @apply flex items-center justify-center space-x-1 my-2 p-4 border-2 border-dashed border-slate-300 rounded-md text-center text-slate-600;
+}
+
+#image-upload-container .drop label {
+  @apply cursor-pointer font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500;
+}
+#image-upload-container .entry {
+  @apply my-6 flex flex-col items-center;
+}
+
+#image-upload-container .entry img {
+  @apply mb-4; /* Adjust as needed for spacing */
+}
+
+#image-upload-container .entry .progress,
+#image-upload-container .entry a {
+  @apply self-stretch; /* Stretch to the width of the container */
+}
+#image-upload-container .entry .progress .value {
+  @apply text-left mb-2 text-xs font-semibold inline-block text-red-500;
+}
+
+#image-upload-container .entry .progress .bar {
+  @apply flex h-2 overflow-hidden text-xs bg-red-200 rounded-lg mb-4;
+}
+
+#image-upload-container .entry .progress .bar > span {
+  @apply shadow-none bg-red-500;
+  transition: width 1s ease;
+}
+
+#image-upload-container .entry a {
+  @apply text-3xl font-bold text-red-700 hover:text-red-700 cursor-pointer;
+}
+
+#image-upload-container .error {
+  @apply block text-rose-600 my-2 text-sm leading-6;
+}
+
+#gallery {
+  @apply flex flex-wrap items-center justify-center sm:justify-start;
+}
+
+#gallery .image {
+  @apply text-center p-4 m-4 border-2 border-slate-300 rounded-xl;
+}
+
+#gallery .image img {
+  @apply h-64 sm:h-36 mx-auto object-fill;
+}
+
+#gallery .image .name {
+  @apply mt-2 text-base text-slate-600 font-medium;
+}
 
 
   
+.products-footer {
+  @apply text-center bg-white max-w-4xl mx-auto text-lg py-8;
+}
+
+.products-footer .pagination {
+  @apply inline-flex shadow-sm;
+}
+
+.products-footer a {
+  @apply -ml-px inline-flex items-center px-3 py-2 border border-slate-300 bg-white text-base font-medium text-slate-600 no-underline;
+}
+
+.products-footer a:hover {
+  @apply bg-slate-300;
+}
+
+.products-footer a.active {
+  @apply bg-red-500 text-white;
+}
+
+.products-footer a:first-child {
+  @apply rounded-l-md;
+}
+
+.products-footer a:last-child {
+  @apply rounded-r-md;
+}
+
+.products-footer a.previous {
+  @apply rounded-l-md;
+}
+
+.products-footer a.next {
+  @apply rounded-r-md;
+}
+
+/* Promo Component */
+
+.promo {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 48rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #ef4444, #ef4444); /* Solid red-500 background */
+  --tw-gradient-from: #4ade80 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(74 222 128 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #3b82f6 var(--tw-gradient-to-position);
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.promo .deal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 800;
+  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.promo .expiration {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  --tw-text-opacity: 1;
+  color: rgb(15 23 42 / var(--tw-text-opacity));
+}
+
+.promo .legal {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  font-style: italic;
+  --tw-text-opacity: 1;
+  color: rgb(203 213 225 / var(--tw-text-opacity));
+}
+
+.promo svg {
+  display: inline-flex;
+  height: 1.5rem;
+  width: 1.5rem;
+}
   
-  
+
   
   
   

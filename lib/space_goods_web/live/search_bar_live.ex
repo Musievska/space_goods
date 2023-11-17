@@ -3,51 +3,54 @@ defmodule SpaceGoodsWeb.SearchBarLive do
 
   alias SpaceGoods.Products
 
+  on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, product: "", matches: [], loading: false)}
   end
 
+  @impl true
   def render(assigns) do
-    product = Map.get(assigns, :product, "")
-
     ~H"""
-    <div id="search-bar">
-      <form phx-submit="search" phx-change="suggest">
-        <input
+    <div id="search-bar" class="flex p-10 justify-center ">
+      <.form phx-submit="search" phx-change="suggest" class="flex ">
+        <.input
           type="text"
           name="product"
           value={@product}
-          placeholder="Search for Space Goods"
+          placeholder={gettext("Search for Space Goods...")}
           autofocus
-          autocomplete="on"
-          readonly={@loading}
+          autocomplete="off"
           list="matches"
-          phx-debounce="1000"
+          phx-debounce="500"
+          class="flex-grow p-2 rounded-l-lg"
         />
 
         <button>
-          <img src="/images/search.svg" />
+          <.icon
+            name="hero-magnifying-glass"
+            class="ml-1 h-8 w-8 hover:animate-bounce text-red-500"
+          />
         </button>
-      </form>
+      </.form>
 
       <datalist id="matches">
         <option :for={{name, description} <- @matches} value={name}>
           <%= description %>
         </option>
       </datalist>
-
-      <%!-- <div :if={@loading} class="loader">Loading...</div> --%>
     </div>
     """
   end
 
+  @impl true
   def handle_event("suggest", %{"product" => prefix}, socket) do
     matches = Products.suggest(prefix)
     {:noreply, assign(socket, matches: matches)}
   end
 
+  @impl true
   def handle_event("search", %{"product" => product}, socket) do
     send(socket.parent_pid, {:run_search, product})
 
@@ -60,16 +63,8 @@ defmodule SpaceGoodsWeb.SearchBarLive do
     {:noreply, socket}
   end
 
-
-  def handle_info({:run_search, product}, socket) do
-    socket =
-      assign(socket,
-        products: Products.search_by_name(product),
-        loading: false
-      )
-
-    {:noreply, socket}
+  @impl true
+  def handle_event("clear", _params, socket) do
+    {:noreply, assign(socket, product: "")}
   end
-
-
 end

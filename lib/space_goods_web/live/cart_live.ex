@@ -3,7 +3,6 @@ defmodule SpaceGoodsWeb.CartLive do
   alias SpaceGoods.Shopping
   alias SpaceGoods.Products
 
-
   on_mount {SpaceGoodsWeb.UserAuth, :mount_current_user}
 
   @impl true
@@ -77,7 +76,9 @@ defmodule SpaceGoodsWeb.CartLive do
   # Handler for "increase_quantity" event
   def handle_event("increase_quantity", %{"value" => %{"id" => product_id}}, socket) do
     # Optimistically update the client-side UI
-    updated_cart_items = update_cart_item_quantity(socket.assigns.cart_items, product_id, &(&1 + 1))
+    updated_cart_items =
+      update_cart_item_quantity(socket.assigns.cart_items, product_id, &(&1 + 1))
+
     socket = assign(socket, cart_items: updated_cart_items)
 
     user_id = get_user_id(socket)
@@ -103,7 +104,9 @@ defmodule SpaceGoodsWeb.CartLive do
   # Handler for "decrease_quantity" event
   def handle_event("decrease_quantity", %{"value" => %{"id" => product_id}}, socket) do
     # Optimistically update the client-side UI
-    updated_cart_items = update_cart_item_quantity(socket.assigns.cart_items, product_id, &(&1 - 1))
+    updated_cart_items =
+      update_cart_item_quantity(socket.assigns.cart_items, product_id, &(&1 - 1))
+
     socket = assign(socket, cart_items: updated_cart_items)
 
     user_id = get_user_id(socket)
@@ -125,7 +128,6 @@ defmodule SpaceGoodsWeb.CartLive do
     # Update the cart items on the client side
     {:noreply, assign(socket, cart_items: updated_cart_items)}
   end
-
 
   def handle_unexpected_error(:error, _function, _args, _opts) do
     {:error, "An unexpected error occurred"}
@@ -167,20 +169,6 @@ defmodule SpaceGoodsWeb.CartLive do
     Enum.reduce(cart_items, 0.0, fn item, acc -> acc + item["quantity"] * item["price"] end)
   end
 
-  # def mount(_params, _session, socket) do
-  #   {:ok, assign(socket, error: nil)}
-  # end
-
-  # def handle_event("clear_cart", _value, socket) do
-  #   case Shopping.clear_cart(socket.assigns.current_user.id) do
-  #     {:ok, _cart} ->
-  #       {:noreply, assign(socket, :cart_items, [])}
-
-  #     {:error, error} ->
-  #       {:noreply, assign(socket, :error, error)}
-  #   end
-  # end
-
   def handle_event("clear_cart", _value, socket) do
     case socket.assigns.current_user do
       nil ->
@@ -197,6 +185,9 @@ defmodule SpaceGoodsWeb.CartLive do
     end
   end
 
+  def handle_event("finish_purchase", _value, socket) do
+    {:noreply, push_navigate(socket, to: "/checkout")}
+  end
 
   def handle_event("add_more_products", _value, socket) do
     {:noreply, push_navigate(socket, to: "/products")}
@@ -236,16 +227,20 @@ defmodule SpaceGoodsWeb.CartLive do
                     />
                   </div>
                   <div class="flex flex-col gap-1">
-                    <p class="text-lg text-gray-800 font-semibold"><%= product["name"] %></p>
+                    <p class="text-lg text-gray-800 font-semibold">
+                      <%= product["name"] %>
+                    </p>
                   </div>
                 </div>
                 <!-- Price Information -->
                 <div class="self-center text-center">
                   <%!-- Add logic for coupon/need to render condin. --%>
                   <%!-- <p class="text-gray-600 font-normal text-sm line-through">$99.99
-                        <span class="text-emerald-500 ml-2">(-50% OFF)</span>
-                    </p> --%>
-                  <p class="text-gray-800 font-normal text-xl">$<%= product["price"] %></p>
+        <span class="text-emerald-500 ml-2">(-50% OFF)</span>
+    </p> --%>
+                  <p class="text-gray-800 font-normal text-xl">
+                    $<%= product["price"] %>
+                  </p>
                 </div>
                 <!-- Remove Product Icon -->
                 <div
@@ -255,27 +250,11 @@ defmodule SpaceGoodsWeb.CartLive do
                   phx-hook="RemoveFromCart"
                 >
                   <button class="" phx-click="remove_item" data-action="remove_item">
-                    <svg
-                      class=""
-                      height="30px"
-                      width="30px"
-                      id={"Layer_1-" <> product["id"]}
-                      style="enable-background:new 0 0 512 512;"
-                      version="1.1"
-                      viewBox="0 0 512 512"
-                      xml:space="preserve"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    <.icon
+                      name="hero-trash"
+                      class="ml-1 w-8 h-8 text-red-500 hover:animate-bounce"
                     >
-                      <g>
-                        <path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z" />
-                        <g>
-                          <rect height="241" width="14" x="249" y="160" />
-                          <polygon points="320,160 305.4,160 294.7,401 309.3,401" />
-                          <polygon points="206.5,160 192,160 202.7,401 217.3,401" />
-                        </g>
-                      </g>
-                    </svg>
+                    </.icon>
                   </button>
                 </div>
               </div>
@@ -332,50 +311,57 @@ defmodule SpaceGoodsWeb.CartLive do
         </div>
         <!-- Purchase Resume -->
         <div class="w-full md:w-1/2 flex flex-col h-fit gap-4 p-4 ">
-          <p class="text-red-500 text-xl font-extrabold">Purchase Resume</p>
+          <p class="text-red-500 text-xl font-extrabold">
+            <%= gettext("Purchase Resume") %>
+          </p>
           <div class="flex flex-col p-4 gap-4 text-lg font-semibold shadow-md border rounded-sm">
             <div class="flex flex-row justify-between">
-              <p class="text-gray-600">Items</p>
+              <p class="text-gray-600"><%= gettext("Items") %></p>
               <p class="text-end font-bold"><%= total_quantity(@cart_items) %></p>
             </div>
             <hr class="bg-gray-200 h-0.5" />
             <div class="flex flex-row justify-between">
-              <p class="text-gray-600">Discount</p>
-              <a class="text-gray-500 text-base underline" href="#">Add</a>
+              <p class="text-gray-600"><%= gettext("Discount") %></p>
+              <a class="text-gray-500 text-base underline" href="#">
+                <%= gettext("Add") %>
+              </a>
             </div>
             <hr class="bg-gray-200 h-0.5" />
             <div class="flex flex-row justify-between">
-              <p class="text-gray-600">Total</p>
+              <p class="text-gray-600"><%= gettext("Total") %></p>
               <div>
                 <p class="text-end font-bold">
-                  $<%= :erlang.float_to_binary(total_price(@cart_items), decimals: 2) %>
+                  $<%= :erlang.float_to_binary(total_price(@cart_items),
+                    decimals: 2
+                  ) %>
                 </p>
               </div>
             </div>
             <div class="flex gap-2">
               <button
                 id="finish-button"
-                phx-hook="FinishPurchase"
-                phx-click="clear_cart"
-                class="transition-colors text-sm bg-red-600 hover:bg-red-700 p-2 rounded-sm w-full text-white text-hover shadow-md"
+                phx-click="finish_purchase"
+                class="transition-colors text-sm bg-red-600 hover:bg-red-700 p-2 rounded-sm w-full text-white shadow-md"
               >
-                FINISH
+                <%= gettext("FINISH") %>
               </button>
+
               <button
-              phx-click="add_more_products"
-              id="add-more-products-button"
-              class="transition-colors text-sm bg-red border border-red-600 p-2 rounded-sm w-full text-gray-700 text-hover shadow-md">
-                ADD MORE PRODUCTS
+                phx-click="add_more_products"
+                id="add-more-products-button"
+                class="transition-colors text-sm bg-red border border-red-600 p-2 rounded-sm w-full text-gray-700 text-hover shadow-md"
+              >
+                <%= gettext("ADD MORE PRODUCTS") %>
               </button>
             </div>
           </div>
         </div>
       <% else %>
-        <p>No items in cart.</p>
+        <p><%= gettext("No items in cart.") %></p>
       <% end %>
     </div>
-    <script src="/js/app.js">
-    </script>
+    <%!-- <script src="/js/app.js">
+    </script> --%>
     """
   end
 end

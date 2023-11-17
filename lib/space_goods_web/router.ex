@@ -10,23 +10,40 @@ defmodule SpaceGoodsWeb.Router do
     plug :put_root_layout, html: {SpaceGoodsWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :fetch_current_user
     # custom plug to set the locale
-    plug SpaceGoodsWeb.Plugs.SetLocalePlug
+    plug SpaceGoodsWeb.Plugs.SetLocale, gettext: SpaceGoodsWeb.Gettext, default_locale: "en"
+    # plug SpaceGoodsWeb.Plugs.StripLocale
+    plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  # Fallback scope for routes without locale
   scope "/", SpaceGoodsWeb do
     pipe_through :browser
 
     get "/", PageController, :home
-    live "/products", ProductsLive, :index
-    live "/products/:id", ProductDetailsLive, :index
-    live "/cart", CartLive, :index
-    live "/favorites", FavoritesLive, :index
+  end
+
+  scope "/:locale", SpaceGoodsWeb do
+    pipe_through :browser
+
+    get "/", PageController, :home
+
+    live_session :default, on_mount: SpaceGoodsWeb.RestoreLocale do
+      live "/products", ProductsLive
+      live "/products/:id", ProductDetailsLive
+      live "/cart", CartLive
+      live "/wishlist", WishlistLive
+      live "/shipping-info", ShippingInfoLive
+      live "/checkout", CheckoutLive
+      live "/test-image-upload", TestImageUploadLive
+      live "/profile-image-upload", ProfileImageUploadLive
+      live "/upload-photos", UploadPhotosLive
+      live "/confirm-order", ConfirmOrderLive
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -53,7 +70,7 @@ defmodule SpaceGoodsWeb.Router do
 
   ## Authentication routes
 
-  scope "/", SpaceGoodsWeb do
+  scope "/:locale", SpaceGoodsWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
@@ -67,7 +84,7 @@ defmodule SpaceGoodsWeb.Router do
     post "/users/log_in", UserSessionController, :create
   end
 
-  scope "/", SpaceGoodsWeb do
+  scope "/:locale", SpaceGoodsWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
@@ -77,7 +94,7 @@ defmodule SpaceGoodsWeb.Router do
     end
   end
 
-  scope "/", SpaceGoodsWeb do
+  scope "/:locale", SpaceGoodsWeb do
     pipe_through [:browser]
 
     delete "/users/log_out", UserSessionController, :delete
@@ -87,5 +104,11 @@ defmodule SpaceGoodsWeb.Router do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
+  end
+
+  scope "/:locale", SpaceGoodsWeb do
+    pipe_through [:browser]
+
+    live "/*path", NoPage
   end
 end

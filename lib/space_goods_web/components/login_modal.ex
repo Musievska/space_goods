@@ -3,9 +3,15 @@ defmodule SpaceGoodsWeb.LoginModal do
 
   def render(assigns) do
     ~H"""
-    <div id="loginModal" class="fixed inset-0 z-50 overflow-auto bg-smoke-light flex">
+    <div
+      id="loginModal"
+      class="fixed inset-0 z-50 overflow-auto bg-smoke-light flex"
+    >
       <div class="relative p-8 bg-white w-full max-w-md m-auto flex-col flex">
-        <span class="absolute top-0 right-0 pt-4 pr-4 cursor-pointer" phx-click="hide_modal">
+        <span
+          class="absolute top-0 right-0 pt-4 pr-4 cursor-pointer"
+          phx-click="hide_modal"
+        >
           &times;
         </span>
         <div>

@@ -95,7 +95,7 @@ products = [
   %{
     name: "Satellite Kit",
     description: "A DIY kit for building and launching your own satellite.",
-    price: "40000.00",
+    price: "40400.00",
     rating: 4.6,
     category: "Space Tech",
     image_url: "/images/satellite_kit.jpg"

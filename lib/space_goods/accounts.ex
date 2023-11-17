@@ -4,9 +4,10 @@ defmodule SpaceGoods.Accounts do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
   alias SpaceGoods.Repo
 
-  alias SpaceGoods.Accounts.{User, UserToken, UserNotifier}
+  alias SpaceGoods.Accounts.{User, UserToken, UserNotifier, ShippingInfo, Favorite, Checkout}
 
   ## Database getters
 
@@ -349,5 +350,130 @@ defmodule SpaceGoods.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def change_shipping_info(%ShippingInfo{} = shipping_info) do
+    ShippingInfo.changeset(shipping_info, %{})
+  end
+
+  def create_shipping_info(shipping_params) do
+    %ShippingInfo{}
+    |> ShippingInfo.changeset(shipping_params)
+    |> Repo.insert()
+  end
+
+  # def add_to_wishlist(user_id, product_id) do
+  #   %Favorite{}
+  #   |> Favorite.changeset(%{user_id: user_id, product_id: product_id})
+  #   |> Repo.insert()
+  # end
+  def remove_from_wishlist(%User{id: user_id} = user, product_id) do
+    # Fetch the favorite record that needs to be deleted.
+    case Repo.get_by(Favorite, user_id: user_id, product_id: product_id) do
+      nil ->
+        {:error, :not_found}
+
+      favorite ->
+        # Delete the favorite record if found.
+        case Repo.delete(favorite) do
+          {:ok, _struct} -> :ok
+          {:error, reason} -> {:error, reason}
+        end
+    end
+  end
+
+  def add_to_wishlist(user_id, product_id) do
+    case Repo.get_by(Favorite, user_id: user_id, product_id: product_id) do
+      nil ->
+        %Favorite{}
+        |> Favorite.changeset(%{user_id: user_id, product_id: product_id})
+        |> Repo.insert()
+
+        {:ok, :added}
+
+      _favorite ->
+        {:error, :already_in_wishlist}
+    end
+  end
+
+  # def remove_from_wishlist(user_id, product_id) do
+  #   Repo.delete_all(
+  #     from f in Favorite, where: f.user_id == ^user_id and f.product_id == ^product_id
+  #   )
+  # end
+
+  def list_wishlist(user_id) do
+    Repo.all(from f in Favorite, where: f.user_id == ^user_id, preload: :product)
+  end
+
+  def shipping_info_changeset(%SpaceGoods.Accounts.ShippingInfo{} = shipping_info, attrs) do
+    Ecto.Changeset.cast(shipping_info, attrs, [:address, :city, :state, :zip])
+    |> Ecto.Changeset.validate_required([:address, :city, :state, :zip])
+  end
+
+  def change_checkout(checkout \\ %Checkout{}, attrs \\ %{}) do
+    checkout
+    |> cast(attrs, [
+      :user_id,
+      :first_name,
+      :last_name,
+      :email,
+      :city,
+      :address,
+      :zip,
+      :delivery_date,
+      :shipping_same_as_billing
+    ])
+    |> validate_required([
+      :user_id,
+      :first_name,
+      :last_name,
+      :email,
+      :city,
+      :address,
+      :zip,
+      :delivery_date
+    ])
+    |> validate_length(:zip, is: 4)
+  end
+
+  # Rewritten get_or_create_checkout function
+  def get_or_create_checkout(user_id) do
+    Repo.get_by(Checkout, user_id: user_id)
+    |> case do
+      nil ->
+        # Create a new checkout with default values
+        default_attrs = %{
+          user_id: user_id,
+          first_name: "",
+          last_name: "",
+          email: "",
+          city: "",
+          address: "",
+          zip: "",
+          delivery_date: nil,
+          shipping_same_as_billing: false
+        }
+
+        change_checkout(%Checkout{}, default_attrs)
+        |> Repo.insert()
+
+      checkout ->
+        {:ok, checkout}
+    end
+  end
+
+  # handles profile image upload
+  def update_profile_image(%User{} = user, image_location) do
+    changeset = Ecto.Changeset.change(user, profile_image_url: image_location)
+
+    case Repo.update(changeset) do
+      {:ok, user} -> {:ok, user}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  def change_profile_image(%User{} = user, attrs \\ %{}) do
+    Ecto.Changeset.change(user, attrs)
   end
 end

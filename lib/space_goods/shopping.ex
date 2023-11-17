@@ -4,7 +4,8 @@ defmodule SpaceGoods.Shopping do
   alias SpaceGoods.Products.Product
   import Ecto.Query
 
-  def get_or_create_cart(%{user_id: user_id, session_id: session_id}) when is_binary(user_id) and is_binary(session_id) do
+  def get_or_create_cart(%{user_id: user_id, session_id: session_id})
+      when is_binary(user_id) and is_binary(session_id) do
     # user_id and session_id should be integers
     user_id_int = String.to_integer(user_id)
     session_id_int = String.to_integer(session_id)
@@ -29,7 +30,6 @@ defmodule SpaceGoods.Shopping do
   end
 
   def get_or_create_cart(_), do: {:error, "Invalid argument"}
-
 
   def add_product_to_cart(cart, product_id) do
     case Repo.get_by(CartItem, cart_id: cart.id, product_id: product_id) do
