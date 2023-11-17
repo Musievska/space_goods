@@ -71,8 +71,8 @@ defmodule SpaceGoodsWeb.ProfileImageUploadLive do
   defp presign_upload(entry, socket) do
     config = %{
       region: @s3_region,
-      access_key_id: "AKIAQ5I5SCK5YFB4TYZ6",
-      secret_access_key: "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"
+      access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+      secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY")
     }
 
     {:ok, fields} =
