@@ -22,7 +22,7 @@ defmodule SpaceGoodsWeb.LoginModal do
           <div class="flex space-x-4">
             <a
               href="/users/log_in"
-              class="w-1/2 p-4 text-lg font-semibold bg-blue-500 text-white rounded"
+              class="w-1/2 p-4 text-lg font-semibold bg-red-500 text-white rounded"
             >
               Log In
             </a>

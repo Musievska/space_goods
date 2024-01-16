@@ -7,12 +7,6 @@ defmodule SpaceGoods.Products do
   alias SpaceGoods.Repo
   alias SpaceGoods.Products.Product
 
-  # def list_products(filters \\ %{}) do
-  #   Product
-  #   |> apply_category_filter(filters["category"])
-  #   |> apply_sorting(filters["sort_by"] || "default")
-  #   |> Repo.all()
-  # end
 
   def list_products(filters \\ %{}, page \\ 1, per_page \\ 6) do
     Product
@@ -117,15 +111,6 @@ defmodule SpaceGoods.Products do
     |> limit(^per_page)
     |> offset(^offset)
   end
-
-  # def count_products_in_category(nil), do: {:error, "Category cannot be nil"}
-
-  # def count_products_in_category(category) do
-  #   from(p in Product, where: p.category == ^category)
-  #   |> Repo.aggregate(:count, :id)
-  # end
-
-  # defp paginate(query, _options), do: query
 
   defp apply_category_filter(query, nil), do: query
   defp apply_category_filter(query, ""), do: query
